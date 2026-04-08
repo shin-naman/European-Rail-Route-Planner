@@ -93,7 +93,32 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     protected SearchNode computeShortestPath(Node start, Node end) {
-        return null;
+        PriorityQueue<SearchNode> priorityQueue = new PriorityQueue<>();
+        PlaceholderMap<Node, Node> visited = new PlaceholderMap<>();
+
+        priorityQueue.add(new SearchNode(start));
+
+        while(!priorityQueue.isEmpty()) {
+            SearchNode current = priorityQueue.poll();
+
+            if (visited.containsKey(current.node)) {
+                continue;
+            }
+
+            visited.put(current.node, current.node);
+
+            if (current.node == end) {
+                return current;
+            }
+
+            for (Edge edge: current.node.edgesLeaving) {
+                if (!visited.containsKey(edge.succ)) {
+                    priorityQueue.add(new SearchNode(current, edge));
+                }
+            }
+        }
+
+        throw new NoSuchElementException("No such path exists from start to end");
     }
 
     /**
@@ -112,7 +137,19 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     public List<NodeType> shortestPathData(NodeType start, NodeType end) {
-        return null;
+        Node startNode = nodes.get(start);
+        Node endNode = nodes.get(end);
+
+        SearchNode endSearchNode = computeShortestPath(startNode, endNode);
+        LinkedList<NodeType> path = new LinkedList<>();
+        SearchNode current = endSearchNode;
+
+        while (current != null) {
+            path.addFirst(current.node.data);
+            current = current.pred;
+        }
+
+        return path;
     }
 
     /**
@@ -129,7 +166,11 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * @throws NullPointerException if the start or end node are null
      */
     public double shortestPathCost(NodeType start, NodeType end) {
-        return Double.NaN;
+        Node startNode = nodes.get(start);
+        Node endNode = nodes.get(end);
+
+        SearchNode endSearchNode = computeShortestPath(startNode, endNode);
+        return endSearchNode.cost;
     }
 
 }
