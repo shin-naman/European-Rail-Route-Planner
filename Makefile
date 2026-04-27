@@ -5,5 +5,8 @@ startServer: compileServer
 	java WebApp
 
 runAllTests:
-	javac -cp .:../junit5.jar *.java
-	java -jar ../junit5.jar -cp . --scan-class-path
+	javac -cp .:../junit5.jar BackendTests.java Backend.java BackendInterface.java DijkstraGraph.java BaseGraph.java HashTableMap.java MapADT.java GraphADT.java
+	java -jar ../junit5.jar -cp . --select-class BackendTests
+
+clean:
+	rm -f *.class
