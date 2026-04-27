@@ -2,12 +2,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * This ADT represents a directed graph data structure with only positive edge 
+ * This ADT represents a directed graph data structure with non-negative edge 
  * weights. Duplicate node values are not allowed.
  *
  * @param NodeType is the data type stored at each graph node
  * @param EdgeType is the numeric data type stored at each graph edge, with a 
- * doubleValue() method that always returns a value >0.0
+ * doubleValue() method that always returns a non-negative value
  */
 public interface GraphADT<NodeType, EdgeType extends Number> {
 
@@ -35,12 +35,19 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
   /**
    * Check whether the graph contains a node with the provided data.
    *
-   * @param data the node contains to check for
+   * @param data the data in the node to check for
    * @return true if data item is stored in a node within the graph, or false 
    *         otherwise
    */
   public boolean containsNode(NodeType data);
 
+  /**
+   * Retrieves a list of all node data from this graph.
+   *
+   * @return list of all node data
+   */
+  public List<NodeType> getAllNodes();
+    
   /**
    * Return the number of nodes in the graph.
    *
@@ -49,16 +56,16 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
   public int getNodeCount();
 
   /**
-   * Insert a new directed edge with positive edges weight into the graph. Or 
-   * if an edge between pred and succ already exists, update the data stored 
-   * in that edge with the new weight.
+   * Insert a new directed edge with non-negative weight into the graph. If an 
+   * edge between pred and succ already exists, update the data stored in that 
+   * edge with the new weight.
    *
    * @param pred is the data item contained in the new edge's predecesor node
    * @param succ is the data item contained in the new edge's successor node
-   * @param weight is the positive valued data item stored in the new edge
+   * @param weight is the non-negative data stored in the new edge
    * @return true if the edge could be inserted or updated, or false if the 
-   *         pred or succ data are not found in any graph nodes or if the 
-   *         weight specified was not a positive value >0.0
+   * pred or succ data are not found in any graph nodes or if the weight 
+   * specified was negative.
    */
   public boolean insertEdge(NodeType pred, NodeType succ, EdgeType weight);
 
@@ -77,7 +84,7 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
    *
    * @param pred the data item contained in the source node for the edge
    * @param succ the data item contained in the target node for the edge
-   * @return true if the edge is found in the graph, or false other
+   * @return true if the edge is found in the graph, or false otherwise
    */
   public boolean containsEdge(NodeType pred, NodeType succ);
 
@@ -86,7 +93,7 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
    *
    * @param pred the data item contained in the source node for the edge
    * @param succ the data item contained in the target node for the edge
-   * @return the non-negative data from the edge between those nodes
+   * @return the non-negative data of the edge between nodes pred and succ
    * @throws NoSuchElementException if either node or the edge between them 
    *         are not found within this graph
    */
@@ -111,8 +118,8 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
    * @param end the data item in the destination node for the path
    * @return list of data item from node along this shortest path
    * @throws NoSuchElementException if either the start or end node cannot
-   *         be found in the graph, or if there is no directed path from the
-   *         start node to the end node
+   * be found in the graph, or if there is no directed path from the start node 
+   * to the end node
    */
   public List<NodeType> shortestPathData(NodeType start, NodeType end);
 
@@ -125,9 +132,9 @@ public interface GraphADT<NodeType, EdgeType extends Number> {
    * @param start the data item in the starting node for the path
    * @param end the data item in the destination node for the path
    * @return the cost of the shortest path between these nodes
-   * @throws NoSuchElementException if either the start or end node cannot
-   *         be found in the graph, or if there is no directed path from the
-   *         start node to the end node
+   * @throws NoSuchElementException if either the start or end node cannot be 
+   * found in the graph, or if there is no directed path from the start node to 
+   * the end node
    */
   public double shortestPathCost(NodeType start, NodeType end);
     
