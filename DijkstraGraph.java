@@ -55,7 +55,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      * Constructor that sets the map that the graph uses.
      */
     public DijkstraGraph() {
-        super(new PlaceholderMap<>());
+        super(new HashTableMap<>());
     }
 
     /**
@@ -94,7 +94,7 @@ public class DijkstraGraph<NodeType, EdgeType extends Number>
      */
     protected SearchNode computeShortestPath(Node start, Node end) {
         PriorityQueue<SearchNode> priorityQueue = new PriorityQueue<>();
-        PlaceholderMap<Node, Node> visited = new PlaceholderMap<>();
+        HashTableMap<Node, Node> visited = new HashTableMap<>();
 
         priorityQueue.add(new SearchNode(start));
 
