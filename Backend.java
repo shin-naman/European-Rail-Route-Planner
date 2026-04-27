@@ -24,37 +24,58 @@ public class Backend implements  BackendInterface {
      * @throws IOException if there was any problem reading from this file
      */
     public void loadGraphData(String filename) throws IOException {
-        graph = new Graph_Placeholder();
-        locations = new ArrayList<>();
-
-        Scanner sc = new Scanner(new File(filename));
-
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine().trim();
-            if (!line.contains("->")) {
-                continue;
-            }
-
-            String[] parts = line.split("->");
-            String start = parts[0].trim().replace("\"","");
-            String rest = parts[1].trim();
-            String end = rest.substring(0, rest.indexOf("[")).trim().replace("\"", "");
-            String weightStr = rest.substring(rest.indexOf("=") + 1, rest.indexOf("]"));
-            Double weight = Double.valueOf(weightStr);
-
-            if (!locations.contains(start)) {
-                locations.add(start);
-                graph.insertNode(start);
-            }
-            if (!locations.contains(end)) {
-                locations.add(end);
-                graph.insertNode(end);
-            }
-
-            graph.insertEdge(start, end, weight);
+        for (String location : new ArrayList<>(locations)) {
+            graph.removeNode(location);
         }
+        locations.clear();
 
-        sc.close();
+        Set<String> locationSet = new HashSet<>();
+
+        try (Scanner sc = new Scanner(new File(filename))) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                if (!line.contains("->")) {
+                    continue;
+                }
+
+                try {
+                    String[] parts = line.split("->");
+                    if (parts.length < 2) {
+                        throw new IOException("Malformed line in dot file: " + line);
+                    }
+
+                    String start = parts[0].trim().replace("\"", "");
+                    String rest = parts[1].trim();
+
+                    int openBracket = rest.indexOf("[");
+                    int equals = rest.indexOf("=");
+                    int closeBracket = rest.indexOf("]");
+
+                    if (openBracket < 0 || equals < 0 || closeBracket < 0 || equals > closeBracket) {
+                        throw new IOException("Malformed line in dot file: " + line);
+                    }
+
+                    String end = rest.substring(0, openBracket).trim().replace("\"", "");
+                    String weightStr = rest.substring(equals + 1, closeBracket).trim();
+                    Double weight = Double.valueOf(weightStr);
+
+                    if (locationSet.add(start)) {
+                        locations.add(start);
+                        graph.insertNode(start);
+                    }
+
+                    if (locationSet.add(end)) {
+                        locations.add(end);
+                        graph.insertNode(end);
+                    }
+
+                    graph.insertEdge(start, end, weight);
+
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                    throw new IOException("Malformed line in dot file: " + line, e);
+                }
+            }
+        }
     }
 
     /**
@@ -152,6 +173,8 @@ public class Backend implements  BackendInterface {
      * Helper method for backend testing, lets you add locations manually
      */
     public void addLocation(String location) {
-        locations.add(location);
+        if (!locations.contains(location)) {
+            locations.add(location);
+        }
     }
 }
